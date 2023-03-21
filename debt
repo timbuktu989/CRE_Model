@@ -1,0 +1,88 @@
+import math
+from enum import Enum
+from typing import List
+
+
+class UnsupportedLoanType(Exception):
+    pass
+
+
+class LoanType(Enum):
+    FIXED_RATE = "Fixed Rate"
+    ADJUSTABLE_RATE = "Adjustable Rate"
+    INTEREST_ONLY = "Interest Only"
+    BALLOON = "Balloon"
+    # Add more loan types as needed
+
+
+class Loan:
+    def __init__(self, loan_type: LoanType, principal: float, interest_rate: float, term_in_years: int, amortization_period: int, initial_interest_only_period: int = 0):
+        self.loan_type = loan_type
+        self.principal = principal
+        self.interest_rate = interest_rate
+        self.term_in_years = term_in_years
+        self.amortization_period = amortization_period
+        self.initial_interest_only_period = initial_interest_only_period
+
+    def calculate_monthly_payment(self, number_of_payments_made: int = 0):
+        if self.loan_type == LoanType.INTEREST_ONLY and number_of_payments_made < self.initial_interest_only_period * 12:
+            return self.principal * (self.interest_rate / 12)
+
+        if self.loan_type == LoanType.BALLOON:
+            # Balloon payment loans are not supported in this method
+            raise UnsupportedLoanType("Balloon payment loans are not supported in this method")
+
+        if self.loan_type == LoanType.ADJUSTABLE_RATE:
+            # Adjustable-rate loans are not supported in this method
+            raise UnsupportedLoanType("Adjustable-rate loans are not supported in this method")
+
+        monthly_interest_rate = self.interest_rate / 12
+        number_of_payments = self.amortization_period * 12
+        numerator = monthly_interest_rate * (1 + monthly_interest_rate) ** number_of_payments
+        denominator = (1 + monthly_interest_rate) ** number_of_payments - 1
+        monthly_payment = self.principal * (numerator / denominator)
+        return monthly_payment
+
+    def calculate_outstanding_balance(self, number_of_payments_made: int):
+        # Adjust this method for different loan types as needed
+        if self.loan_type == LoanType.BALLOON:
+            # Balloon payment loans are not supported in this method
+            raise UnsupportedLoanType("Balloon payment loans are not supported in this method")
+
+        if self.loan_type == LoanType.ADJUSTABLE_RATE:
+            # Adjustable-rate loans are not supported in this method
+            raise UnsupportedLoanType("Adjustable-rate loans are not supported in this method")
+
+        monthly_payment = self.calculate_monthly_payment(number_of_payments_made)
+        monthly_interest_rate = self.interest_rate / 12
+        number_of_total_payments = self.amortization_period * 12
+
+        numerator = ((1 + monthly_interest_rate) ** number_of_payments_made - 1) * monthly_payment
+        denominator = monthly_interest_rate * ((1 + monthly_interest_rate) ** number_of_total_payments - 1)
+        outstanding_balance = self.principal - (numerator / denominator)
+        return outstanding_balance
+
+
+class LoanPortfolio:
+    def __init__(self, loans: List[Loan]):
+        self.loans = loans
+
+    def calculate_total_monthly_payment(self, number_of_payments_made: int = 0):
+        return sum(loan.calculate_monthly_payment(number_of_payments_made) for loan in self.loans)
+
+    def calculate_total_outstanding_balance(self, number_of_payments_made: int):
+        return sum(loan.calculate_outstanding_balance(number_of_payments_made) for loan in self.loans)
+
+
+# Example usage
+loan1 = Loan(LoanType.FIXED_RATE, principal=1000000, interest_rate=0.05, term_in_years=10, amortization_period=30)
+loan2 = Loan(LoanType.INTEREST_ONLY, principal=500000, interest_rate=0.04, term_in_years=5, amortization_period=5, initial_interest_only_period=3)
+
+loans = [loan1, loan2]
+loan_portfolio = LoanPortfolio(loans)
+
+total_monthly_payment = loan_portfolio.calculate_total_monthly_payment()
+print(f"Total Monthly Payment: {total_monthly_payment}")
+
+total_outstanding_balance = loan_portfolio.calculate_total_outstanding_balance(number_of_payments_made=60)
+print(f"Total Outstanding Balance after 5 years: {total_outstanding_balance}")

@@ -1,0 +1,67 @@
+from typing import List
+
+class Partner:
+    def __init__(self, name: str, equity_contribution: float, preferred_return: float):
+        self.name = name
+        self.equity_contribution = equity_contribution
+        self.preferred_return = preferred_return
+        self.profits_received = 0
+
+    def receive_profits(self, amount: float):
+        self.profits_received += amount
+
+    def __str__(self):
+        return f"{self.name} (Equity Contribution: {self.equity_contribution}, Preferred Return: {self.preferred_return * 100}%)"
+
+class Waterfall:
+    def __init__(self, tiers: List[float], partners: List[Partner]):
+        self.tiers = tiers
+        self.partners = partners
+        self.total_equity = sum(partner.equity_contribution for partner in partners)
+
+    def distribute_profits(self, total_profit: float):
+        remaining_profit = total_profit
+
+        # Distribute preferred return
+        for partner in self.partners:
+            preferred_amount = partner.equity_contribution * partner.preferred_return
+            distribution = min(remaining_profit, preferred_amount)
+            partner.receive_profits(distribution)
+            remaining_profit -= distribution
+
+        # Distribute remaining profits based on tiers
+        for tier in self.tiers:
+            tier_amount = self.total_equity * tier
+            if remaining_profit <= tier_amount:
+                self._distribute_profits_pro_rata(remaining_profit)
+                break
+            else:
+                self._distribute_profits_pro_rata(tier_amount)
+                remaining_profit -= tier_amount
+
+    def _distribute_profits_pro_rata(self, amount: float):
+        for partner in self.partners:
+            share = (partner.equity_contribution / self.total_equity) * amount
+            partner.receive_profits(share)
+
+    def print_profit_distribution(self):
+        for partner in self.partners:
+            print(f"{partner}: Profits Received: {partner.profits_received}")
+
+
+# Example usage
+partner1 = Partner("Alice", 200000, 0.08)
+partner2 = Partner("Bob", 300000, 0.08)
+partner3 = Partner("Charlie", 400000, 0.08)
+partner4 = Partner("David", 500000, 0.08)
+partner5 = Partner("Eve", 600000, 0.08)
+
+partners = [partner1, partner2, partner3, partner4, partner5]
+tiers = [0.15, 0.25, 0.35, 0.25]
+
+waterfall = Waterfall(tiers, partners)
+waterfall.distribute_profits(500000)
+waterfall.print_profit_distribution()
+
+
+
