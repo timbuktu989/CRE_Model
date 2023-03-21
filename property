@@ -4,49 +4,6 @@ from lease import Lease
 from expense import Expense
 from revenue import calculate_total_rent
 
-class Lease:
-    def __init__(self, tenant_name, lease_start_date, lease_end_date, lease_type, annual_rent, rent_per_square_foot, annual_rent_increase, tenant_improvement_allowance, leasing_commissions):
-        self.tenant_name = tenant_name
-        self.lease_start_date = lease_start_date
-        self.lease_end_date = lease_end_date
-        self.lease_type = lease_type
-        self.annual_rent = annual_rent
-        self.rent_per_square_foot = rent_per_square_foot
-        self.annual_rent_increase = annual_rent_increase
-        self.tenant_improvement_allowance = tenant_improvement_allowance
-        self.leasing_commissions = leasing_commissions
-
-    def calculate_remaining_lease_term(self):
-        today = date.today()
-        if self.lease_end_date < today:
-            return 0
-        return (self.lease_end_date - today).days
-
-    def calculate_rent_over_remaining_lease_term(self):
-        remaining_lease_term = self.calculate_remaining_lease_term()
-        rent = self.annual_rent
-        total_rent = 0
-        for _ in range(remaining_lease_term // 365):
-            total_rent += rent
-            rent *= (1 + self.annual_rent_increase)
-        return total_rent
-
-class Expense:
-    def __init__(self, expense_type, expense_amount, expense_frequency, expense_growth_rate):
-        self.expense_type = expense_type
-        self.expense_amount = expense_amount
-        self.expense_frequency = expense_frequency
-        self.expense_growth_rate = expense_growth_rate
-
-    def calculate_annual_expense(self):
-        if self.expense_frequency == 'monthly':
-            return self.expense_amount * 12
-        elif self.expense_frequency == 'yearly':
-            return self.expense_amount
-        else:
-            raise ValueError("Invalid expense frequency")
-
-
 class Property:
     def __init__(self, property_id, property_name, property_type, address, location, year_built, lot_size, zoning, gross_leasable_area, number_of_units, number_of_floors, parking_spaces, parking_ratio, property_condition, acquisition_date, acquisition_price, current_market_value, appraisal_value, cap_rate_history, occupancy_rate, discount_rate):
         self.property_id = property_id

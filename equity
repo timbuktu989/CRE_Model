@@ -1,10 +1,14 @@
+import uuid
 from typing import List
 
 class Partner:
-    def __init__(self, name: str, equity_contribution: float, preferred_return: float):
+    """A class representing a partner in the equity structure."""
+
+    def __init__(self, name: str, equity_contribution: float, preferred_return: float, partner_id: str = None):
         self.name = name
         self.equity_contribution = equity_contribution
         self.preferred_return = preferred_return
+        self.partner_id = partner_id if partner_id is not None else str(uuid.uuid4())
         self.profits_received = 0
 
     def receive_profits(self, amount: float):
@@ -13,13 +17,20 @@ class Partner:
     def __str__(self):
         return f"{self.name} (Equity Contribution: {self.equity_contribution}, Preferred Return: {self.preferred_return * 100}%)"
 
+    def __repr__(self):
+        return f"Partner(name={self.name!r}, equity_contribution={self.equity_contribution}, preferred_return={self.preferred_return}, partner_id={self.partner_id!r})"
+
 class Waterfall:
-    def __init__(self, tiers: List[float], partners: List[Partner]):
+    """A class that handles the distribution of profits among partners."""
+
+    def __init__(self, tiers: List[float], partners: List[Partner], tier_type: str = "fixed"):
         self.tiers = tiers
         self.partners = partners
+        self.tier_type = tier_type
         self.total_equity = sum(partner.equity_contribution for partner in partners)
 
     def distribute_profits(self, total_profit: float):
+        """Distribute the total_profit among partners according to the waterfall structure."""
         remaining_profit = total_profit
 
         # Distribute preferred return
@@ -40,28 +51,26 @@ class Waterfall:
                 remaining_profit -= tier_amount
 
     def _distribute_profits_pro_rata(self, amount: float):
+        """Distribute the specified amount of profit among partners according to their share ratios."""
+        if self.tier_type == "fixed":
+            share_ratio = [partner.equity_contribution / self.total_equity for partner in self.partners]
+        elif self.tier_type == "equity":
+            share_ratio = [partner.equity_contribution for partner in self.partners]
+        else:
+            raise ValueError("Invalid tier_type")
+
+        for partner, share in zip(self.partners, share_ratio):
+            distribution = share * amount
+            partner.receive_profits(distribution)
+
+    def profit_distribution_report(self) -> str:
+        """Return a formatted string representing the profit distribution for each partner."""
+        report = []
         for partner in self.partners:
-            share = (partner.equity_contribution / self.total_equity) * amount
-            partner.receive_profits(share)
+            report.append(f"{partner}: Profits Received: {partner.profits_received}")
+        return "\n".join(report)
 
-    def print_profit_distribution(self):
+    def reset_profit_distribution(self):
+        """Reset the profit distribution for each partner."""
         for partner in self.partners:
-            print(f"{partner}: Profits Received: {partner.profits_received}")
-
-
-# Example usage
-partner1 = Partner("Alice", 200000, 0.08)
-partner2 = Partner("Bob", 300000, 0.08)
-partner3 = Partner("Charlie", 400000, 0.08)
-partner4 = Partner("David", 500000, 0.08)
-partner5 = Partner("Eve", 600000, 0.08)
-
-partners = [partner1, partner2, partner3, partner4, partner5]
-tiers = [0.15, 0.25, 0.35, 0.25]
-
-waterfall = Waterfall(tiers, partners)
-waterfall.distribute_profits(500000)
-waterfall.print_profit_distribution()
-
-
-
+            partner.profits_received = 0

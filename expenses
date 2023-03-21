@@ -15,3 +15,18 @@ class Expense:
         else:
             raise ValueError("Invalid expense frequency")
 
+class ExpenseManager:
+    def __init__(self, expenses: List[Expense] = None):
+        self.expenses = expenses if expenses else []
+
+    def add_expense(self, expense: Expense) -> None:
+        self.expenses.append(expense)
+
+    def remove_expense(self, expense: Expense) -> None:
+        self.expenses.remove(expense)
+
+    def calculate_total_annual_expense(self) -> float:
+        return sum(expense.calculate_annual_expense() for expense in self.expenses)
+
+    def calculate_total_future_expense(self, years: int) -> float:
+        return sum(expense.calculate_future_expense(years) for expense in self.expenses)
