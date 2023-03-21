@@ -1,0 +1,16 @@
+from datetime import date
+
+class Expense:
+    def __init__(self, expense_type, expense_amount, expense_frequency, expense_growth_rate):
+        self.expense_type = expense_type
+        self.expense_amount = expense_amount
+        self.expense_frequency = expense_frequency
+        self.expense_growth_rate = expense_growth_rate
+
+    def calculate_annual_expense(self):
+        if self.expense_frequency == 'monthly':
+            return self.expense_amount * 12
+        elif self.expense_frequency == 'yearly':
+            return self.expense_amount
+        else:
+            raise ValueError("Invalid expense frequency")

@@ -1,5 +1,8 @@
 from typing import List
 from datetime import date
+from lease import Lease
+from expense import Expense
+from revenue import calculate_total_rent
 
 class Lease:
     def __init__(self, tenant_name, lease_start_date, lease_end_date, lease_type, annual_rent, rent_per_square_foot, annual_rent_increase, tenant_improvement_allowance, leasing_commissions):
