@@ -1,58 +1,54 @@
-import numpy as np
-from models.property import Property
-from models.acquisition import Acquisition
-from models.debt import Debt
-from models.exit import Exit
-from models.operating import Operating
-from models.renovation import Renovation
-from utils.financial import calculate_ratios, calculate_waterfall_statement
+from assumptions.acquisition import Acquisition
+from assumptions.debt import Debt
+from assumptions.equity import Equity
+from assumptions.exit import Exit
+from assumptions.operating import Operating
+from assumptions.property import Property
+from assumptions.renovation import Renovation
+
+from utils.validation import (
+    validate_acquisition_data,
+    validate_debt_data,
+    validate_equity_data,
+    validate_exit_data,
+    validate_operating_data,
+    validate_property_data,
+    validate_renovation_data,
+)
 
 
-def process_raw_data(raw_data):
-    property_obj = Property(**raw_data["property"])
-    acquisition_obj = Acquisition(**raw_data["acquisition"])
-    debt_obj = Debt(**raw_data["debt"])
-    exit_obj = Exit(**raw_data["exit"])
-    operating_obj = Operating(**raw_data["operating"])
-    renovation_obj = Renovation(**raw_data["renovation"])
+def main():
+    # Load data from the files or API (not provided in this example)
+    acquisition_data = {...}
+    debt_data = {...}
+    equity_data = {...}
+    exit_data = {...}
+    operating_data = {...}
+    property_data = {...}
+    renovation_data = {...}
 
-    return property_obj, acquisition_obj, debt_obj, exit_obj, operating_obj, renovation_obj
+    # Validate data
+    valid_acquisition_data = validate_acquisition_data(acquisition_data)
+    valid_debt_data = validate_debt_data(debt_data)
+    valid_equity_data = validate_equity_data(equity_data)
+    valid_exit_data = validate_exit_data(exit_data)
+    valid_operating_data = validate_operating_data(operating_data)
+    valid_property_data = validate_property_data(property_data)
+    valid_renovation_data = validate_renovation_data(renovation_data)
 
+    # Create objects using the validated data
+    acquisition = Acquisition(**valid_acquisition_data)
+    debt = Debt(**valid_debt_data)
+    equity = Equity(**valid_equity_data)
+    exit_obj = Exit(**valid_exit_data)
+    operating = Operating(**valid_operating_data)
+    property_obj = Property(**valid_property_data)
+    renovation = Renovation(**valid_renovation_data)
 
-def generate_monthly_cash_flow(property_obj, acquisition_obj, debt_obj, exit_obj, operating_obj, renovation_obj):
-    # Implement the logic to calculate the 120-month cash flow based on the input objects
-    monthly_cash_flow = np.zeros(120)  # Replace with actual calculation
-    return monthly_cash_flow
-
-
-def generate_yearly_cash_flow(monthly_cash_flow):
-    # Calculate the yearly cash flow from the monthly cash flow
-    yearly_cash_flow = np.sum(monthly_cash_flow.reshape(-1, 12), axis=1)
-    return yearly_cash_flow
-
-
-def generate_outputs(raw_input_data):
-    property_obj, acquisition_obj, debt_obj, exit_obj, operating_obj, renovation_obj = process_raw_data(raw_input_data)
-
-    monthly_cash_flow = generate_monthly_cash_flow(property_obj, acquisition_obj, debt_obj, exit_obj, operating_obj, renovation_obj)
-    yearly_cash_flow = generate_yearly_cash_flow(monthly_cash_flow)
-    waterfall_statement = calculate_waterfall_statement(yearly_cash_flow)
-    ratios = calculate_ratios(property_obj, acquisition_obj, debt_obj, exit_obj, operating_obj, renovation_obj)
-
-    outputs = {
-        "monthly_cash_flow": monthly_cash_flow,
-        "yearly_cash_flow": yearly_cash_flow,
-        "waterfall_statement": waterfall_statement,
-        "ratios": ratios,
-    }
-
-    return outputs
+    # Perform desired operations with the objects (not provided in this example)
 
 
 if __name__ == "__main__":
-    # You can replace the 'raw_input_data' variable with actual data from your SQL database or another source.
-    raw_input_data = {}  # Example: {"property": {...}, "operating": {...}, "debt": {...}, "exit": {...}, "renovation": {...}}
-    outputs = generate_outputs(raw_input_data)
+    main()
 
-    # Print or store the outputs as needed.
-    print(outputs)
+

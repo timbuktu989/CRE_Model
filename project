@@ -1,0 +1,9 @@
+class Project:
+    def __init__(self, project_name: str, partners: List[Partner], tiers: List[float], loans: List[Loan], expenses: List[Expense]):
+        self.project_name = project_name
+        self.partners = partners
+        self.tiers = tiers
+        self.loans = loans
+        self.expenses = expenses
+        self.waterfall = Waterfall(tiers, partners)
+        self.loan_portfolio = LoanPortfolio(loans)
