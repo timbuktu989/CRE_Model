@@ -1,4 +1,0 @@
-from lease import Lease
-
-def calculate_total_rent(leases: list):
-    return sum(lease.calculate_rent_over_remaining_lease_term() for lease in leases)
